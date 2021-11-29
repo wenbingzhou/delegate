@@ -64,6 +64,51 @@ public:
 
 };
 
+//递归终止函数
+template<class F>
+void expand(F& f)
+{
+}
+template<class F, class T, class... Args>void expand(F& f, T first, Args&&...args)
+{
+	f(first);
+	expand(f, args...);
+}
+
+struct OutPut1
+{
+	OutPut1(std::stringstream &sstr) :_sstr(sstr) {}
+
+	template<class T>
+	void operator()(T val)
+	{
+		print(val);
+	}
+	template<class T = std::string>
+	void print(std::string val)
+	{
+		_sstr << "'" << val << "',";
+	}
+	template<class T>
+	void print(T val)
+	{
+		_sstr << val << ",";
+	}
+	std::stringstream &_sstr;
+};
+
+	template<class... Args>
+	void executeJS(char* strFuntionName, Args&&... args) {
+		if (!strFuntionName)
+			return;
+		std::stringstream stream;
+		stream << strFuntionName << "(";
+		expand(OutPut1(stream), args...);
+		std::string strCode = stream.str();
+		strCode = strCode.substr(0, strCode.length() - 1);
+		strCode += ")";
+		}
+
 int main()
 {
 
